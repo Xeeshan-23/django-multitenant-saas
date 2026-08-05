@@ -38,7 +38,7 @@ PostgreSQL running locally (or via Docker)
 
 # 1. Clone & Install
 
-git clone https://github.com/yourusername/django-tenant-forge.git
+git clone https://github.com/Xeeshan-23/django-multitenant-saas.git
 
 cd django-tenant-forge
 
