@@ -1,5 +1,23 @@
+# Environments
 venv/
-    __pycache__/
-    *.pyc
-    .env
-    db.sqlite3
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+
+# Secrets
+.env
+.env.local
+.env.*
+
+# VS Code
+.vscode/

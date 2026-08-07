@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-local-fallback-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.localhost']
 
 
 # Application definition
@@ -153,3 +153,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'customers.TenantUser'
+
+ROOT_URLCONF = 'saas_project.urls'
+PUBLIC_SCHEMA_URLCONF = 'saas_project.urls_public'
