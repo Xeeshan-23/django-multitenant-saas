@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ request.tenant.name }}{% endblock %} | SaaS Portal</title>
+    <!-- Tailwind CSS for instant modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-indigo-900 text-white flex flex-col shadow-xl">
+        <div class="h-16 flex items-center px-6 border-b border-indigo-800 font-bold text-xl tracking-wider">
+            <i class="fas fa-layer-group mr-3 text-indigo-400"></i>
+            TenantForge
+        </div>
+        <div class="p-6">
+            <div class="text-xs uppercase text-indigo-400 font-semibold tracking-wider mb-2">Active Workspace</div>
+            <div class="bg-indigo-800 rounded-lg p-3 border border-indigo-700 shadow-inner flex items-center">
+                <div class="h-8 w-8 rounded bg-indigo-600 flex items-center justify-center font-bold mr-3">
+                    {{ request.tenant.name|make_list|first }}
+                </div>
+                <div>
+                    <div class="font-semibold text-sm">{{ request.tenant.name }}</div>
+                    <div class="text-xs text-indigo-300">{{ request.tenant.schema_name }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <a href="#" class="flex items-center px-4 py-2.5 bg-indigo-800 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-chart-pie w-5 mr-2 text-indigo-300"></i> Dashboard
+            </a>
+            <a href="#" class="flex items-center px-4 py-2.5 hover:bg-indigo-800 rounded-lg text-sm font-medium transition-colors text-indigo-200 hover:text-white">
+                <i class="fas fa-folder w-5 mr-2"></i> Projects
+            </a>
+            <a href="#" class="flex items-center px-4 py-2.5 hover:bg-indigo-800 rounded-lg text-sm font-medium transition-colors text-indigo-200 hover:text-white">
+                <i class="fas fa-users w-5 mr-2"></i> Team
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-indigo-800">
+            <a href="#" class="flex items-center text-sm text-indigo-300 hover:text-white transition-colors">
+                <i class="fas fa-sign-out-alt w-5 mr-2"></i> Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen">
+        <!-- Top Header -->
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-8 border-b border-gray-200 z-10">
+            <h1 class="text-xl font-semibold text-gray-800">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-bell"></i></button>
+                <div class="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold shadow">
+                    AD
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content -->
+        <div class="flex-1 overflow-y-auto p-8">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>
