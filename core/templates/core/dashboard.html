@@ -54,7 +54,45 @@
         <header class="h-16 flex items-center justify-between px-8 border-b border-gray-100">
             <h2 class="text-xl font-bold text-gray-800">Dashboard</h2>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-400 hover:text-indigo-600 transition-colors"><i class="fas fa-bell"></i></button>
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button onclick="toggleDropdown('notifDropdown')" class="text-gray-400 hover:text-indigo-600 transition-colors relative focus:outline-none">
+                        <i class="fas fa-bell text-xl"></i>
+                        {% if notifications %}
+                        <span class="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 ring-2 ring-white"></span>
+                        {% endif %}
+                    </button>
+                    <!-- Dropdown Panel -->
+                    <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden">
+                        
+                        <!-- UPDATED HEADER WITH CLEAR BUTTON -->
+                        <div class="p-3 bg-gray-50 border-b flex justify-between items-center">
+                            <span class="font-bold text-sm text-gray-700">Recent Activity</span>
+                            {% if notifications %}
+                            <form method="POST" action="{% url 'clear_notifications' %}" class="m-0 p-0">
+                                {% csrf_token %}
+                                <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+                                    Clear all
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- NOTIFICATION LIST WITH PROPER CLOSING TAGS -->
+                        <ul class="max-h-64 overflow-y-auto">
+                            {% for notif in notifications %}
+                            <li class="p-3 border-b text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                                {{ notif.message }}
+                                <div class="text-xs text-gray-400 mt-1">{{ notif.created_at|timesince }} ago</div>
+                            </li>
+                            {% empty %}
+                            <li class="p-4 text-sm text-gray-500 text-center">No new notifications.</li>
+                            {% endfor %}
+                        </ul>
+                    </div> 
+                </div>
+                
+                <!-- Avatar -->
                 <div class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">
                     AD
                 </div>
@@ -74,7 +112,22 @@
             <!-- Project Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for project in projects %}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center space-x-2">
+                            <h4 class="font-bold text-gray-800 text-lg">{{ project.name }}</h4>
+                            <!-- Edit Button -->
+                            <button onclick="openEditModal('{{ project.id }}', '{{ project.name|escapejs }}', '{{ project.status }}', '{{ project.due_date|date:'Y-m-d' }}')" class="text-gray-400 hover:text-indigo-600 text-sm p-1">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold 
+                            {% if project.status == 'Active' %}bg-green-100 text-green-700
+                            {% elif project.status == 'Planning' %}bg-yellow-100 text-yellow-700
+                            {% else %}bg-gray-100 text-gray-700{% endif %}">
+                            {{ project.status }}
+                        </span>
+                    </div>
+                <!-- <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-4">
                         <h4 class="font-bold text-gray-800 text-lg">{{ project.name }}</h4>
                         <span class="px-2.5 py-1 rounded-full text-xs font-semibold 
@@ -90,7 +143,7 @@
                     <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2">
                         <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 45%"></div>
                     </div>
-                </div>
+                </div> -->
                 {% empty %}
                 <div class="col-span-full bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center">
                     <i class="fas fa-folder-open text-4xl text-gray-300 mb-4"></i>
@@ -140,10 +193,61 @@
         </div>
     </div>
 
+<!-- Edit Project Modal (Hidden by default) -->
+    <div id="editModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Edit Project</h3>
+                <form id="editForm" method="POST" action="">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+                        <input type="text" id="editName" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="editStatus" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="Planning">Planning</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                        <input type="date" id="editDate" name="due_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="flex items-center justify-between space-x-3">
+                        <button type="button" onclick="toggleModal('editModal')" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Simple JS to toggle modal -->
     <script>
         function toggleModal(modalID) {
             document.getElementById(modalID).classList.toggle("hidden");
+        }
+        function toggleDropdown(dropdownID) {
+            document.getElementById(dropdownID).classList.toggle("hidden");
+        }
+
+        function openEditModal(id, name, status, date) {
+            // Unhide the edit modal
+            document.getElementById('editModal').classList.remove('hidden');
+            
+            // Set the dynamic form action URL
+            document.getElementById('editForm').action = '/project/update/' + id + '/';
+            
+            // Populate existing data into inputs
+            document.getElementById('editName').value = name;
+            document.getElementById('editStatus').value = status;
+            document.getElementById('editDate').value = date;
         }
     </script>
 </body>

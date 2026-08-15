@@ -12,3 +12,15 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+# notification model:
+class Notification(models.Model):
+    message = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at'] # Shows newest notifications first
+
+    def __str__(self):
+        return self.message
