@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Project, Notification
 
+@login_required(login_url='/login/')
 def home(request):
     # Handle NEW Project Creation
     if request.method == 'POST':
@@ -26,6 +28,7 @@ def home(request):
     return render(request, 'core/dashboard.html', context)
 
 # View to handle updating existing projects
+@login_required(login_url='/login/')
 def update_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     
@@ -40,6 +43,7 @@ def update_project(request, project_id):
         
     return redirect('tenant_home')
 
+@login_required(login_url='/login/')
 def clear_notifications(request):
     if request.method == 'POST':
         # Find all unread notifications in this tenant's schema and mark them as read
