@@ -3,6 +3,8 @@ A scalable, production-ready B2B SaaS boilerplate built with Django and PostgreS
 
 This template provides a robust foundation for building multi-tenant applications using schema-based isolation, ensuring strict data separation between clients while maintaining a single, unified codebase. It includes automated tenant provisioning, dynamic subdomain routing, and a global authentication system.
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/87659661-24da-405b-9895-bc04aa0d6e2b" />
+
 ## 🏗️ Architecture Overview
 This project uses the **Shared Database, Separate Schemas** approach to multi-tenancy.
 
