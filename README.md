@@ -1,56 +1,53 @@
-# Django Tenant Forge 
-A scalable, production-ready B2B SaaS boilerplate built with Django and PostgreSQL.
-This template provides a robust foundation for building multi-tenant applications using schema-based isolation, ensuring strict data separation between clients while maintaining a single, unified codebase. It includes dynamic subdomain routing and a global authentication system.
+# Django Tenant Forge 🏢
+A scalable, production-ready B2B SaaS boilerplate built with Django and PostgreSQL. 
 
-#  Architecture Overview
-This project uses the Shared Database, Separate Schemas approach to multi-tenancy.
+This template provides a robust foundation for building multi-tenant applications using schema-based isolation, ensuring strict data separation between clients while maintaining a single, unified codebase. It includes automated tenant provisioning, dynamic subdomain routing, and a global authentication system.
 
-**1. Data Security:** Every tenant (customer) gets their own isolated PostgreSQL schema. A bug in the application code cannot accidentally leak data across tenants because the database itself enforces the boundaries.
+## 🏗️ Architecture Overview
+This project uses the **Shared Database, Separate Schemas** approach to multi-tenancy.
 
-**2. Cost Efficiency:** All tenants share the same database instance and application server, minimizing infrastructure overhead.
+* **Data Security:** Every tenant (customer) gets their own isolated PostgreSQL schema. A bug in the application code cannot accidentally leak data across tenants because the database itself enforces the boundaries.
+* **Cost Efficiency:** All tenants share the same database instance and application server, minimizing infrastructure overhead.
+* **Global Authentication:** Users are stored in the shared public schema. A user can log in once and access multiple tenant environments (based on their permissions) without needing separate accounts.
 
-**3. Global Authentication:** Users are stored in the shared public schema. A user can log in once and access multiple tenant environments (based on their permissions) without needing separate accounts.
+## ✨ Key Features
+* **Automated Provisioning Engine:** A public-facing onboarding flow that dynamically generates database schemas, registers admin accounts, and provisions custom subdomains instantly via a UI form.
+* **Complete CRUD Lifecycle:** An interactive, isolated workspace dashboard with full Create, Read, Update, and Delete capabilities for project management.
+* **Real-time Notification Engine:** An integrated alerting system that tracks workspace activity (e.g., project creations and deletions).
+* **PostgreSQL Schema Isolation:** Powered by `django-tenants`.
+* **Global User Management:** Centralized authentication powered by `django-tenant-users`.
+* **Dynamic Routing:** Automatically routes traffic to the correct schema based on the incoming subdomain (e.g., `alpha.localhost`).
+* **Clean App Structure:** Clear separation between `SHARED_APPS` (infrastructure/global data) and `TENANT_APPS` (tenant-specific business logic).
 
-#  Key Features:
+## 🛠️ Technology Stack
+* **Backend:** Python, Django 5.x
+* **Database:** PostgreSQL
+* **Multi-Tenancy:** `django-tenants`, `django-tenant-users`
+* **Frontend:** Tailwind CSS, HTML5, Vanilla JavaScript
 
-**PostgreSQL Schema Isolation:** Powered by django-tenants.
-
-**Global User Management:** Centralized authentication powered by django-tenant-users.
-
-**Dynamic Routing:** Automatically routes traffic to the correct schema based on the incoming subdomain (e.g., alpha.yourdomain.com).
-
-**Clean App Structure:** Clear separation between SHARED_APPS (infrastructure/global data) and TENANT_APPS (tenant-specific business logic).
-# Technology Stack
-
-**Backend:** Python, Django 5.x
-
-**Database:** PostgreSQL
-
-**Multi-Tenancy:** django-tenants, django-tenant-users
-# Getting Started
+## 🚀 Getting Started
 Follow these instructions to get the project running on your local machine.
 
-**Prerequisites**
+### Prerequisites
+* Python 3.10+
+* PostgreSQL running locally (or via Docker)
 
-Python 3.10+
-
-PostgreSQL running locally (or via Docker)
-
-# 1. Clone & Install
-
+### 1. Clone & Install
+```bash
 git clone https://github.com/Xeeshan-23/django-multitenant-saas.git
+cd django-multitenant-saas
+```
 
-cd django-tenant-forge
-
-**Create and activate a virtual environment**
-
+**Create and activate a virtual environment:**
+```bash
 python -m venv venv
-
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-**Install dependencies**
-
+**Install dependencies:**
+```bash
 pip install -r requirements.txt
+```
 
 # 2. Database Configuration
 
@@ -61,42 +58,39 @@ pip install -r requirements.txt
 # 3. Apply Migrations
 
 Run the specialized migration commands to build the shared architecture:
-
+```bash
 python manage.py makemigrations
-
 python manage.py migrate_schemas --shared
+python manage.py migrate_schemas
+```
 
-# 4. Provision the Public Tenant
+# 4. Initialize the Public Tenant
 
-Initialize the primary public schema and create your global superuser account:
-
-python manage.py create_public_tenant --domain_url localhost --owner_email admin@example.com
-
-# 5. Create a Test Tenant
-
-To test the multi-tenant routing, use the Django shell to spin up a local tenant environment:
-
-python manage.py shell
-
+To enable the public landing page and routing, open the Django shell (python manage.py shell) and execute:
+```bash
 from customers.models import Client, Domain
+from django.contrib.auth import get_user_model
+import datetime
 
-# Create the isolated tenant schema
-tenant1 = Client(schema_name='tenant_alpha', name='Alpha Corp', paid_until='2027-12-31', on_trial=False)
-tenant1.save()
+User = get_user_model()
+admin_user, _ = User.objects.get_or_create(email='admin@tenantforge.com', defaults={'is_superuser': True, 'is_staff': True})
 
-# Map a local subdomain to the tenant
-domain1 = Domain(domain='alpha.localhost', tenant=tenant1, is_primary=True)
-domain1.save()
+public_tenant, _ = Client.objects.get_or_create(
+    schema_name='public',
+    defaults={'name': 'TenantForge Public', 'paid_until': datetime.date(2030, 1, 1), 'on_trial': False, 'owner': admin_user}
+)
+Domain.objects.get_or_create(domain='localhost', defaults={'tenant': public_tenant, 'is_primary': True})
 exit()
+```
 
-Note: You must add 127.0.0.1 alpha.localhost to your local hosts file to test this in your browser.
+# 5. Run the Server & Test Automated Provisioning
 
-# 6. Run the Server
-
-Start the development server:
-
+Start the development server on port 8080 (required for local subdomain routing):
+```bash
 python manage.py runserver 8080
+```
+1. Visit http://localhost:8080 to see the public landing page.
 
- Visit http://localhost:8080 to see the public landing page.
- 
- Visit http://alpha.localhost:8080 to see the isolated tenant environment.
+2. Fill out the "Create Your Workspace" form to test the automated provisioning engine.
+
+3. Upon submission, the system will instantly build an isolated schema and redirect you to your newly generated tenant subdomain (e.g., http://companyname.localhost:8080/login/).
