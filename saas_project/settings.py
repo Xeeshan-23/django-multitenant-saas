@@ -156,3 +156,7 @@ AUTH_USER_MODEL = 'customers.TenantUser'
 
 ROOT_URLCONF = 'saas_project.urls'
 PUBLIC_SCHEMA_URLCONF = 'saas_project.urls_public'
+
+# Authentication Redirects
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TenantForge | Enterprise SaaS Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-100 py-4 px-8 flex justify-between items-center">
+        <div class="font-bold text-2xl tracking-wider text-indigo-900">
+            <i class="fas fa-layer-group mr-2 text-indigo-600"></i> TenantForge
+        </div>
+        <a href="http://alpha.localhost:8080/login/" class="text-sm font-medium text-gray-600 hover:text-indigo-600">
+            Existing Customer Login &rarr;
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center p-8">
+        <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            
+            <!-- Marketing Copy -->
+            <div>
+                <span class="text-indigo-600 font-semibold tracking-wider uppercase text-sm">Now in Beta</span>
+                <h1 class="text-5xl font-extrabold text-gray-900 mt-4 leading-tight">
+                    Scale your team's workflow securely.
+                </h1>
+                <p class="text-lg text-gray-500 mt-6 mb-8">
+                    Experience true data isolation. Every workspace gets its own dedicated database schema, ensuring enterprise-grade security and blazing fast performance.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i> Dedicated PostgreSQL Schemas
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i> Dynamic Subdomain Routing
+                    </div>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i> Global User Authentication
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Create Your Workspace</h3>
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                        <input type="text" name="company_name" placeholder="e.g. Gamma Corp" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Workspace URL</label>
+                        <div class="flex items-center">
+                            <input type="text" name="subdomain" placeholder="gamma" required class="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right">
+                            <span class="px-4 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-gray-500">.localhost</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Admin Email</label>
+                        <input type="email" name="email" placeholder="admin@gammacorp.com" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-md text-lg">
+                        Spin Up My Workspace
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-4">By registering, you agree to our Terms of Service. No credit card required.</p>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

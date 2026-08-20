@@ -20,7 +20,14 @@
 
         <form method="POST" action="">
             {% csrf_token %}
+            <!-- THE BULLETPROOF REDIRECT OVERRIDE -->
+            <input type="hidden" name="next" value="/">
             
+            {% if form.errors %}
+            <div class="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+                Invalid email or password. Please try again.
+            </div>
+            {% endif %}
             {% if form.errors %}
             <div class="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
                 Invalid email or password. Please try again.

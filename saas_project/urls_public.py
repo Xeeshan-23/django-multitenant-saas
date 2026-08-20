@@ -1,7 +1,7 @@
 # saas_project/urls_public.py
 from django.contrib import admin
 from django.urls import path
-from core.views import public_home # Importing from core now
+from customers.views import public_home
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,16 +1,46 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth import get_user_model
+from .models import Client, Domain
+from datetime import date, timedelta
 
-# Create your views here.
 
-def public_home(request):  #public landing page:
-    html = """
-    <html>
-        <body style="font-family: sans-serif; padding: 40px; text-align: center; background-color: #f8f9fa;">
-            <h1 style="color: #0b57d0;">Your Awesome SaaS Platform</h1>
-            <p>This is the public landing page served from the <strong>public</strong> schema.</p>
-            <p>Imagine your pricing tables and a "Register your Company" button here.</p>
-        </body>
-    </html>
-    """
-    return HttpResponse(html)
+def public_home(request):
+    if request.method == 'POST':
+        company_name = request.POST.get('company_name')
+        subdomain = request.POST.get('subdomain').lower().replace(" ", "")
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        User = get_user_model()
+
+        user, created = User.objects.get_or_create(email=email)
+        if created:
+            user.set_password(password)
+            user.save()
+
+        schema_name = f"tenant_{subdomain}"
+        
+        trial_end = date.today() + timedelta(days=30) 
+        
+        tenant = Client(
+            schema_name=schema_name,
+            name=company_name,
+            paid_until=trial_end,
+            on_trial=True,
+            owner=user
+        )
+        tenant.save() 
+
+        # Route the Subdomain
+        domain_name = f"{subdomain}.localhost"
+        domain = Domain(domain=domain_name, tenant=tenant, is_primary=True)
+        domain.save()
+
+        # grant this user Admin access to their new workspace
+        tenant.add_user(user, is_superuser=True, is_staff=True)
+
+        # redirect them to their brand new isolated login page
+        return redirect(f"http://{domain_name}:8080/login/")
+
+    return render(request, 'customers/public_home.html')
